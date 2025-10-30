@@ -238,23 +238,25 @@
       showJson(payload);
 
       // отправка на сервер (заглушка). Поменяй URL на свой endpoint.
-      fetch('https://free.mockerapi.com/mock/51336277-e1e5-423e-b4c4-2b3e42e681b0', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(async res => {
-        if (!res.ok) {
-          const txt = await res.text().catch(()=>res.statusText);
-          alert('Ошибка при отправке: ' + (txt || res.status));
-          return;
-        }
-        alert('JSON успешно отправлен на сервер (ответ ' + res.status + ').');
-      }).catch(err => {
-        // если сервер не настроен, мы всё равно показали JSON — это нормально
-        console.warn('fetch error', err);
-        alert('Не удалось отправить на сервер (см. консоль). JSON показан ниже.');
-      });
-    });
+fetch("https://free.mockerapi.com/mock/51336277-e1e5-423e-b4c4-2b3e42e681b0", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    text: "Пример запроса",
+  }),
+})
+  .then(response => {
+    if (!response.ok) throw new Error("Ошибка запроса");
+    return response.json();
+  })
+  .then(data => {
+    console.log("Ответ:", data);
+    // например, вывести на страницу
+    document.body.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+  })
+  .catch(error => console.error("Ошибка:", error));
 
     document.getElementById('showBtn').addEventListener('click', function(){
       showJson(buildJson());

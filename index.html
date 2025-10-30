@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Заявление — JSON export</title>
+  <style>
+    body { font-family: "Trebuchet MS", Arial, sans-serif; padding: 20px; color:#111; }
+    h1 { margin-bottom:6px; }
+    .services { width:100%; border-collapse:collapse; margin:10px 0 18px 0; }
+    .services th, .services td { padding:8px 10px; border-bottom:1px solid #ddd; vertical-align:middle; }
+    .services th { text-align:left; font-weight:600; }
+    .chk { display:inline-block; width:20px; height:20px; }
+    .row { display:flex; gap:12px; margin:8px 0; align-items:center; }
+    label.field { min-width:160px; }
+    input[type="text"], input[type="tel"], textarea { padding:6px 8px; border:1px solid #bbb; border-radius:4px; width:100%; }
+    textarea { min-height:48px; resize:vertical; }
+    .compact { max-width:260px; }
+    button { padding:8px 12px; border-radius:6px; border:0; background:#2b7; cursor:pointer; }
+    button.secondary { background:#ddd; color:#111; margin-left:8px; }
+    pre#jsonOut { background:#f7f7f7; padding:10px; border-radius:6px; overflow:auto; max-height:320px; }
+    .note { font-size:13px; color:#555; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <h1>Заявление о присоединении — экспорт в JSON</h1>
+  <p class="note">Выбери статус услуги: <em>новая</em> или <em>существующая</em>. Нельзя выбрать оба одновременно.</p>
+
+  <table class="services" role="table" aria-label="Сервисы">
+    <thead>
+      <tr><th>Услуга</th><th style="width:120px;text-align:center">новая услуга</th><th style="width:120px;text-align:center">сущ-я услуга</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Кабельное телевидение</td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="catv" data-side="n" id="catv_n" type="checkbox"></td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="catv" data-side="e" id="catv_e" type="checkbox"></td>
+      </tr>
+
+      <tr>
+        <td>Интернет</td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="internet" data-side="n" id="internet_n" type="checkbox"></td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="internet" data-side="e" id="internet_e" type="checkbox"></td>
+      </tr>
+
+      <tr>
+        <td>Видеонаблюдение</td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="cctv" data-side="n" id="cctv_n" type="checkbox"></td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="cctv" data-side="e" id="cctv_e" type="checkbox"></td>
+      </tr>
+
+      <tr>
+        <td>Домофон</td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="intercom" data-side="n" id="intercom_n" type="checkbox"></td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="intercom" data-side="e" id="intercom_e" type="checkbox"></td>
+      </tr>
+
+      <tr>
+        <td>IPTV</td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="iptv" data-side="n" id="iptv_n" type="checkbox"></td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="iptv" data-side="e" id="iptv_e" type="checkbox"></td>
+      </tr>
+
+      <tr>
+        <td>Роутер</td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="router" data-side="n" id="router_n" type="checkbox"></td>
+        <td style="text-align:center"><input class="service-checkbox" data-service="router" data-side="e" id="router_e" type="checkbox"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <form id="appForm" autocomplete="off">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+      <div>
+        <div class="row">
+          <label class="field" for="firstname">Фамилия</label>
+          <input id="firstname" name="firstname" type="text" placeholder="Иванов" required>
+        </div>
+        <div class="row">
+          <label class="field" for="middlename">Отчество</label>
+          <input id="middlename" name="middlename" type="text" placeholder="Иванович">
+        </div>
+        <div class="row">
+          <label class="field" for="lastname">Имя</label>
+          <input id="lastname" name="lastname" type="text" placeholder="Иван">
+        </div>
+      </div>
+
+      <div>
+        <div class="row">
+          <label class="field" for="iin">ИИН</label>
+          <input id="iin" name="iin" class="compact" type="text" placeholder="150788290312">
+        </div>
+
+        <div class="row">
+          <label class="field" for="mobile">Телефон (mobile)</label>
+          <input id="mobile" name="mobile" class="compact" type="tel" placeholder="77008009999">
+        </div>
+
+        <div class="row">
+          <label class="field" for="whatsapp">WhatsApp</label>
+          <input id="whatsapp" name="whatsapp" class="compact" type="tel" placeholder="77008009999">
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="row">
+        <label class="field" for="raddress">Адрес проживания (raddress)</label>
+        <textarea id="raddress" name="raddress" placeholder="Город, улица(район+улица), дом(строение)/(дом+подъезд+квартира)"></textarea>
+      </div>
+
+      <div class="row">
+        <label class="field" for="saddress">Адрес подключения (saddress)</label>
+        <textarea id="saddress" name="saddress" placeholder="Город, улица(район+улица), дом(строение)/(дом+подъезд+квартира)"></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:12px; align-items:center;">
+      <div style="flex:1;">
+        <label class="field" for="manager">Менеджер</label>
+        <input id="manager" name="manager" type="text" placeholder="Менеджер Менеджерович Менеджеров">
+      </div>
+
+      <div style="width:260px;">
+        <label class="field" for="cdate">Дата (cdate)</label>
+        <input id="cdate" name="cdate" type="text" placeholder="YYYY-MM-DD HH:MM">
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <button id="sendBtn" type="submit">Сформировать и отправить JSON</button>
+      <button id="showBtn" type="button" class="secondary">Показать JSON (не отправлять)</button>
+    </div>
+  </form>
+
+  <h3 style="margin-top:18px;">Результирующий JSON</h3>
+  <pre id="jsonOut">{ }</pre>
+
+  <script>
+    // --- взаимная эксклюзивность для каждой пары чекбоксов ---
+    document.querySelectorAll('.service-checkbox').forEach(chk => {
+      chk.addEventListener('change', (e) => {
+        const service = chk.dataset.service;
+        const side = chk.dataset.side; // 'n' или 'e'
+        if (chk.checked) {
+          // снять противоположную галку той же услуги
+          const other = document.querySelector('.service-checkbox[data-service="'+service+'"][data-side="'+(side === 'n' ? 'e' : 'n')+'"]');
+          if (other) other.checked = false;
+        }
+      });
+    });
+
+    // Заполнить cdate текущим временем в формате YYYY-MM-DD HH:MM
+    (function setNow(){
+      const pad = s => (s<10? '0'+s : s);
+      const d = new Date();
+      const val = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+      document.getElementById('cdate').value = val;
+    })();
+
+    // --- сбор данных в точном формате пользователя ---
+    function buildJson() {
+      // services mapping in required order
+      const servicesOrder = [
+        {key:'catv', keys:['catv_n','catv_e']},
+        {key:'internet', keys:['int_n','int_e']},
+        {key:'cctv', keys:['cctv_n','cctv_e']},
+        {key:'intercom', keys:['icom_n','icom_e']},
+        {key:'iptv', keys:['iptv_n','iptv_e']},
+        {key:'router', keys:['rout_n','rout_e']}
+      ];
+
+      // read checkbox states and produce array of objects
+      const services = servicesOrder.map(item => {
+        const s = item.key;
+        // map checkbox ids according to our inputs' ids
+        // we used ids like `${s}_n` and `${s}_e` except for naming differences for internet/router/intercom
+        // create mapping from expected json key to actual element id:
+        const mapping = {
+          catv_n: 'catv_n', catv_e: 'catv_e',
+          int_n: 'internet_n', int_e: 'internet_e',
+          cctv_n: 'cctv_n', cctv_e: 'cctv_e',
+          icom_n: 'intercom_n', icom_e: 'intercom_e',
+          iptv_n: 'iptv_n', iptv_e: 'iptv_e',
+          rout_n: 'router_n', rout_e: 'router_e'
+        };
+
+        const obj = {};
+        // for each expected key (like catv_n) set true/false based on mapped checkbox
+        item.keys.forEach(k => {
+          const elId = mapping[k];
+          const el = document.getElementById(elId);
+          obj[k] = !!(el && el.checked);
+        });
+
+        const wrapper = {};
+        wrapper[s] = obj;
+        return wrapper;
+      });
+
+      // upinfo array
+      const fio = {
+        firstname: document.getElementById('firstname').value.trim(),
+        middlename: document.getElementById('middlename').value.trim(),
+        lastname: document.getElementById('lastname').value.trim()
+      };
+
+      const upinfo = [
+        { fio: fio },
+        { raddress: document.getElementById('raddress').value.trim() },
+        { saddress: document.getElementById('saddress').value.trim() },
+        { iin: document.getElementById('iin').value.trim() },
+        { mobile: document.getElementById('mobile').value.trim() },
+        { whatsapp: document.getElementById('whatsapp').value.trim() }
+      ];
+
+      const out = {
+        services: services,
+        upinfo: upinfo,
+        manager: document.getElementById('manager').value.trim(),
+        cdate: document.getElementById('cdate').value.trim()
+      };
+
+      return out;
+    }
+
+    // показать JSON в <pre>
+    function showJson(obj) {
+      const pretty = JSON.stringify(obj, null, 4);
+      document.getElementById('jsonOut').textContent = pretty;
+    }
+
+    // обработчики кнопок
+    document.getElementById('appForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const payload = buildJson();
+      showJson(payload);
+
+      // отправка на сервер (заглушка). Поменяй URL на свой endpoint.
+      fetch('/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(async res => {
+        if (!res.ok) {
+          const txt = await res.text().catch(()=>res.statusText);
+          alert('Ошибка при отправке: ' + (txt || res.status));
+          return;
+        }
+        alert('JSON успешно отправлен на сервер (ответ ' + res.status + ').');
+      }).catch(err => {
+        // если сервер не настроен, мы всё равно показали JSON — это нормально
+        console.warn('fetch error', err);
+        alert('Не удалось отправить на сервер (см. консоль). JSON показан ниже.');
+      });
+    });
+
+    document.getElementById('showBtn').addEventListener('click', function(){
+      showJson(buildJson());
+    });
+
+    // Умная валидация: если пользователь ставит галку в "новая" — снимаем существующую (и наоборот)
+    // (реализовано выше; здесь — на всякий случай, чтобы блокировать двойной выбор при программных изменениях)
+    function enforceExclusivity() {
+      document.querySelectorAll('.service-checkbox').forEach(el => {
+        el.addEventListener('click', () => {
+          const svc = el.dataset.service;
+          const opposite = document.querySelector('.service-checkbox[data-service="'+svc+'"][data-side="'+(el.dataset.side === 'n' ? 'e' : 'n')+'"]');
+          if (el.checked && opposite) opposite.checked = false;
+        });
+      });
+    }
+    enforceExclusivity();
+
+  </script>
+</body>
+</html>

@@ -117,7 +117,9 @@
 
   // decode base64 to Uint8Array
   function base64ToUint8Array(base64) {
-    const binaryStr = atob(base64);
+    // remove any whitespace and newlines that might be present
+    const cleanBase64 = base64.replace(/\s/g, '');
+    const binaryStr = atob(cleanBase64);
     const len = binaryStr.length;
     const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
@@ -128,13 +130,12 @@
 
   // guess mime and extension from first bytes
   function guessFileType(bytes) {
-    // check PK zip header 50 4B 03 04
-    if (bytes[0] === 0x50 && bytes[1] === 0x4B) return { mime: 'application/docx', ext: 'docx' };
+    // check PK zip header 50 4B 03 04 (docx files are zip archives)
+    if (bytes[0] === 0x50 && bytes[1] === 0x4B) return { mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' };
     // check PDF 25 50 44 46
     if (bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44) return { mime: 'application/pdf', ext: 'pdf' };
-    // check docx -> actually docx is zip (PK)
     // fallback
-    return { mime: 'application/octet-stream', ext: 'docx' };
+    return { mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' };
   }
 
   async function sendJson(){
@@ -174,9 +175,19 @@
       if(parsed && typeof parsed === 'object' && parsed.generated_document){
         try {
           const b64 = parsed.generated_document;
+          console.log('Base64 string length:', b64.length);
+          console.log('Base64 first 100 chars:', b64.substring(0, 100));
+          
           const bytes = base64ToUint8Array(b64);
+          console.log('Decoded bytes length:', bytes.length);
+          console.log('First 10 bytes:', Array.from(bytes.slice(0, 10)).map(b => '0x' + b.toString(16).padStart(2, '0')).join(' '));
+          
           const info = guessFileType(bytes);
+          console.log('Detected file type:', info);
+          
           const blob = new Blob([bytes], { type: info.mime });
+          console.log('Blob created:', blob.size, 'bytes, type:', blob.type);
+          
           const url = URL.createObjectURL(blob);
           const filename = 'generated_document.' + info.ext;
 

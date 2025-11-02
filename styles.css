@@ -34,6 +34,36 @@ input[type="text"], input[type="tel"]{
   border-radius:10px;
   border:1px solid var(--border);
   font-size:14px;
+  transition: background-color 0.2s ease;
+}
+input[type="text"]:disabled, input[type="tel"]:disabled{
+  background:#f5f5f5;
+  color:#8b8b8b;
+  cursor:not-allowed;
+}
+.same-as-container{
+  margin:8px 0 6px 0;
+}
+.same-as-checkbox{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  font-size:13px;
+  color:#555;
+}
+.same-as-checkbox input[type="checkbox"]{
+  cursor:pointer;
+  width:16px;
+  height:16px;
+  margin:0;
+}
+.same-as-label{
+  cursor:pointer;
+  user-select:none;
+}
+.same-as-label:hover{
+  color:#111;
 }
 hr{border:0;border-top:1px solid var(--border);margin:14px 0}
 .btns{display:flex;gap:10px;margin-top:14px}

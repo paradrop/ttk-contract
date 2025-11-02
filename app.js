@@ -6,6 +6,11 @@
   function qsel(selector){ return document.querySelector(selector); }
   function pad(n){ return n < 10 ? '0'+n : n; }
 
+  // normalize phone number: remove '+' and keep only digits
+  function normalizePhone(phone){
+    return phone.replace(/\+/g, '').trim();
+  }
+
   function formatDateNow(){
     const d = new Date();
     return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
@@ -16,9 +21,9 @@
   function checkboxChoiceToBooleans(nId, eId){
     const nCheckbox = el(nId);
     const eCheckbox = el(eId);
-    return { 
-      n: nCheckbox ? nCheckbox.checked : false, 
-      e: eCheckbox ? eCheckbox.checked : false 
+    return {
+      n: nCheckbox ? nCheckbox.checked : false,
+      e: eCheckbox ? eCheckbox.checked : false
     };
   }
 
@@ -48,8 +53,8 @@
         {"raddress" : el('raddress').value.trim()},
         {"saddress" : el('saddress').value.trim()},
         {"iin": el('iin').value.trim()},
-        {"mobile": el('mobile').value.trim()},
-        {"whatsapp": el('whatsapp').value.trim()}
+        {"mobile": normalizePhone(el('mobile').value)},
+        {"whatsapp": normalizePhone(el('whatsapp').value)}
       ],
       "manager": el('manager').value.trim(),
       "cdate": formatDateNow()
@@ -205,6 +210,77 @@
     }
   }
 
+  // "Same as..." functionality
+  function setupSameAs(checkboxId, sourceId, targetId, emptyErrorMsg){
+    const checkbox = el(checkboxId);
+    const sourceField = el(sourceId);
+    const targetField = el(targetId);
+    const targetErr = document.querySelector(`.error[data-for="${targetId}"]`);
+
+    if(!checkbox || !sourceField || !targetField) return;
+
+    // handle checkbox change
+    checkbox.addEventListener('change', function(){
+      if(this.checked){
+        // check if source field is empty
+        const sourceVal = sourceField.value.trim();
+        if(!sourceVal){
+          // uncheck and show error
+          this.checked = false;
+          if(targetErr) targetErr.textContent = emptyErrorMsg;
+          sourceField.focus();
+          return;
+        }
+        // copy value from source to target
+        targetField.value = sourceVal;
+        targetField.disabled = true;
+        // clear any errors on target
+        if(targetErr) targetErr.textContent = '';
+      } else {
+        // enable target field for editing
+        targetField.disabled = false;
+        targetField.focus();
+      }
+    });
+
+    // live sync: when source changes and checkbox is checked, update target
+    sourceField.addEventListener('input', function(){
+      if(checkbox.checked){
+        targetField.value = this.value;
+        // clear target errors while syncing
+        if(targetErr) targetErr.textContent = '';
+      }
+    });
+
+    // if user tries to edit disabled field, inform them
+    targetField.addEventListener('click', function(){
+      if(this.disabled && checkbox.checked){
+        if(targetErr) {
+          targetErr.textContent = 'Отключите опцию "Тот же..." чтобы редактировать это поле';
+          setTimeout(() => {
+            if(targetErr) targetErr.textContent = '';
+          }, 3000);
+        }
+      }
+    });
+  }
+
+  // setup WhatsApp same as Mobile
+  setupSameAs(
+    'whatsapp_same_as_mobile',
+    'mobile',
+    'whatsapp',
+    'Сначала введите номер телефона'
+  );
+
+  // setup saddress same as raddress
+  setupSameAs(
+    'saddress_same_as_raddress',
+    'raddress',
+    'saddress',
+    'Сначала укажите адрес проживания'
+  );
+
   // wire events
   el('showJsonBtn').addEventListener('click', function(e){
     e.preventDefault();
@@ -223,6 +299,16 @@
       const err = document.querySelector(`.error[data-for="${id}"]`);
       if(err) err.textContent = '';
     });
+  });
+
+  // also clear errors when checkboxes are toggled
+  el('whatsapp_same_as_mobile').addEventListener('change', function(){
+    const err = document.querySelector('.error[data-for="whatsapp"]');
+    if(err) err.textContent = '';
+  });
+  el('saddress_same_as_raddress').addEventListener('change', function(){
+    const err = document.querySelector('.error[data-for="saddress"]');
+    if(err) err.textContent = '';
   });
 
 })();

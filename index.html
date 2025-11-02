@@ -89,6 +89,19 @@
 
     <label class="field">
       <span class="label-text">WhatsApp (формат +7XXXXXXXXXX) <span class="req">*</span></span>
+      <div class="same-as-container">
+        <label class="same-as-checkbox">
+          <input
+            type="checkbox"
+            id="whatsapp_same_as_mobile"
+            aria-label="Тот же номер, что и в «Телефон»"
+            aria-controls="whatsapp"
+          >
+          <span class="same-as-label" title="Автоматически вставить номер мобильного в поле WhatsApp">
+            Тот же номер, что и в «Телефон»
+          </span>
+        </label>
+      </div>
       <input type="tel" id="whatsapp" placeholder="+77008009999" inputmode="tel">
       <div class="error" data-for="whatsapp"></div>
     </label>
@@ -101,6 +114,19 @@
 
     <label class="field">
       <span class="label-text">Адрес подключения <span class="req">*</span></span>
+      <div class="same-as-container">
+        <label class="same-as-checkbox">
+          <input
+            type="checkbox"
+            id="saddress_same_as_raddress"
+            aria-label="Тот же адрес, что и в «Адрес проживания»"
+            aria-controls="saddress"
+          >
+          <span class="same-as-label" title="Копировать адрес проживания в адрес подключения">
+            Тот же адрес, что и в «Адрес проживания»
+          </span>
+        </label>
+      </div>
       <input type="text" id="saddress">
       <div class="error" data-for="saddress"></div>
     </label>

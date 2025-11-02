@@ -129,7 +129,7 @@
   // guess mime and extension from first bytes
   function guessFileType(bytes) {
     // check PK zip header 50 4B 03 04
-    if (bytes[0] === 0x50 && bytes[1] === 0x4B) return { mime: 'application/zip', ext: 'zip' };
+    if (bytes[0] === 0x50 && bytes[1] === 0x4B) return { mime: 'application/docx', ext: 'docx' };
     // check PDF 25 50 44 46
     if (bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44) return { mime: 'application/pdf', ext: 'pdf' };
     // check docx -> actually docx is zip (PK)

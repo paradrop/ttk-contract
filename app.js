@@ -12,21 +12,23 @@
            + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
   }
 
-  // read radio group -> {n:bool,e:bool}
-  function radioChoiceToBooleans(choiceName){
-    const radios = document.getElementsByName(choiceName);
-    let sel = null;
-    for(let r of radios) if(r.checked) { sel = r.value; break; }
-    return { n: sel === 'n', e: sel === 'e' };
+  // read checkbox states -> {n:bool,e:bool}
+  function checkboxChoiceToBooleans(nId, eId){
+    const nCheckbox = el(nId);
+    const eCheckbox = el(eId);
+    return { 
+      n: nCheckbox ? nCheckbox.checked : false, 
+      e: eCheckbox ? eCheckbox.checked : false 
+    };
   }
 
   function buildPayload(){
-    const catv = radioChoiceToBooleans('catv_choice');
-    const internet = radioChoiceToBooleans('int_choice');
-    const cctv = radioChoiceToBooleans('cctv_choice');
-    const intercom = radioChoiceToBooleans('icom_choice');
-    const iptv = radioChoiceToBooleans('iptv_choice');
-    const router = radioChoiceToBooleans('rout_choice');
+    const catv = checkboxChoiceToBooleans('catv_n', 'catv_e');
+    const internet = checkboxChoiceToBooleans('int_n', 'int_e');
+    const cctv = checkboxChoiceToBooleans('cctv_n', 'cctv_e');
+    const intercom = checkboxChoiceToBooleans('icom_n', 'icom_e');
+    const iptv = checkboxChoiceToBooleans('iptv_n', 'iptv_e');
+    const router = checkboxChoiceToBooleans('rout_n', 'rout_e');
 
     return {
       services: [
@@ -60,19 +62,6 @@
     document.querySelectorAll('.error').forEach(n => n.textContent = '');
 
     let ok = true;
-
-    // services: require each group to have a selection
-    const groups = ['catv_choice','int_choice','cctv_choice','icom_choice','iptv_choice','rout_choice'];
-    groups.forEach(g => {
-      const radios = document.getElementsByName(g);
-      const errorNode = document.querySelector(`.error[data-for="${g}"]`);
-      let any = false;
-      for(let r of radios) if(r.checked) { any = true; break; }
-      if(!any){
-        ok = false;
-        if(errorNode) errorNode.textContent = 'Выберите новую или существующую услугу';
-      }
-    });
 
     // text fields required
     const requiredText = ['lastname','firstname','middlename','raddress','saddress','manager'];
@@ -233,15 +222,6 @@
     if(node) node.addEventListener('input', () => {
       const err = document.querySelector(`.error[data-for="${id}"]`);
       if(err) err.textContent = '';
-    });
-  });
-
-  ['catv_choice','int_choice','cctv_choice','icom_choice','iptv_choice','rout_choice'].forEach(g => {
-    document.getElementsByName(g).forEach(r => {
-      r.addEventListener('change', () => {
-        const err = document.querySelector(`.error[data-for="${g}"]`);
-        if(err) err.textContent = '';
-      });
     });
   });
 

@@ -61,6 +61,68 @@
     };
   }
 
+  // validate single field
+  function validateField(id){
+    const field = el(id);
+    if(!field) return true;
+
+    const value = field.value.trim();
+    const err = document.querySelector(`.error[data-for="${id}"]`);
+    
+    // skip validation if field is disabled (e.g., when "Same as..." is checked)
+    if(field.disabled){
+      if(err) err.textContent = '';
+      return true;
+    }
+
+    // required text fields
+    const requiredText = ['lastname','firstname','middlename','raddress','saddress','manager'];
+    if(requiredText.includes(id)){
+      if(!value){
+        if(err) err.textContent = 'Обязательное поле';
+        return false;
+      } else {
+        if(err) err.textContent = '';
+        return true;
+      }
+    }
+
+    // IIN: 12 digits only
+    if(id === 'iin'){
+      if(!/^\d{12}$/.test(value)){
+        if(err) err.textContent = 'ИИН должен содержать ровно 12 цифр';
+        return false;
+      } else {
+        if(err) err.textContent = '';
+        return true;
+      }
+    }
+
+    // phone & whatsapp: format +7XXXXXXXXXX
+    const phoneRegex = /^\+7\d{10}$/;
+    if(id === 'mobile'){
+      if(!phoneRegex.test(value)){
+        if(err) err.textContent = 'Телефон в формате +7XXXXXXXXXX';
+        return false;
+      } else {
+        if(err) err.textContent = '';
+        return true;
+      }
+    }
+
+    if(id === 'whatsapp'){
+      if(!phoneRegex.test(value)){
+        if(err) err.textContent = 'WhatsApp в формате +7XXXXXXXXXX';
+        return false;
+      } else {
+        if(err) err.textContent = '';
+        return true;
+      }
+    }
+
+    return true;
+  }
+
   // validation rules
   function validateAll(){
     // clear previous errors
@@ -454,11 +516,19 @@
   const inputs = ['lastname','firstname','middlename','iin','mobile','whatsapp','raddress','saddress','manager'];
   inputs.forEach(id => {
     const node = el(id);
-    if(node) node.addEventListener('input', () => {
-      const err = document.querySelector(`.error[data-for="${id}"]`);
-      if(err) err.textContent = '';
-      updateSendButtonState();
-    });
+    if(node){
+      // clear error on input
+      node.addEventListener('input', () => {
+        const err = document.querySelector(`.error[data-for="${id}"]`);
+        if(err) err.textContent = '';
+        updateSendButtonState();
+      });
+      // validate on blur (when field loses focus)
+      node.addEventListener('blur', () => {
+        validateField(id);
+        updateSendButtonState();
+      });
+    }
   });
 
   // also clear errors when checkboxes are toggled

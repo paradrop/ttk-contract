@@ -76,6 +76,60 @@ button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:
 .req{color:var(--err);margin-left:6px}
 #downloadArea{margin-top:12px}
 a.download-link{display:inline-block;padding:8px 12px;background:#0b74de;color:#fff;border-radius:8px;text-decoration:none;margin-top:8px}
+.signing-instructions{
+  margin-top:20px;
+  padding:16px 20px;
+  background:#f8f9fa;
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+.signing-instructions h2{
+  font-size:16px;
+  margin:0 0 12px;
+  color:#111;
+}
+.signing-instructions ol{
+  margin:0;
+  padding-left:20px;
+  line-height:1.6;
+}
+.signing-instructions ol > li{
+  margin-bottom:10px;
+}
+.signing-instructions ul{
+  margin:8px 0;
+  padding-left:20px;
+  list-style-type:disc;
+}
+.signing-instructions ul li{
+  margin-bottom:6px;
+}
+.signing-instructions code{
+  background:#fff;
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:13px;
+  border:1px solid #e0e0e0;
+  font-family:'Courier New', monospace;
+}
+.signing-instructions strong{
+  font-weight:600;
+  color:#000;
+}
+.ezsigner-button{
+  display:inline-block;
+  margin-top:16px;
+  padding:10px 16px;
+  background:#28a745;
+  color:#fff;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:600;
+  transition:background 0.2s ease;
+}
+.ezsigner-button:hover{
+  background:#218838;
+}
 @media (max-width:640px){
   .grid, .service-row{grid-template-columns:1fr 90px 90px}
 }

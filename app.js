@@ -199,6 +199,35 @@
           a.className = 'download-link';
           el('downloadArea').appendChild(a);
 
+          // add instructions for signing the document
+          const instructions = document.createElement('div');
+          instructions.className = 'signing-instructions';
+          instructions.innerHTML = `
+            <h2>Как подписать договор</h2>
+            <ol>
+              <li>Нажмите кнопку <strong>«Перейти к подписанию»</strong> — откроется сайт ezsigner.kz в новой вкладке</li>
+              <li>На компьютере должен быть установлен <strong>NCALayer</strong> и модуль <strong>ezsigner</strong></li>
+              <li>На ezsigner.kz:
+                <ul>
+                  <li>Выберите опцию <strong>«Подписать документ»</strong></li>
+                  <li>Загрузите ранее скачанный <code>.docx</code></li>
+                  <li>Подпишите документ, выбрав вашу ЭЦП</li>
+                  <li>После успешной подписи скачайте файл <code>.cms</code> (это результат подписи).</li>
+                </ul>
+              </li>
+              <li>Вернитесь на страницу нашего сайта и нажмите <strong>«Загрузить подписанный договор»</strong>.
+                <ul>
+                  <li>Выберите скачанный <code>.cms</code> файл.</li>
+                  <li>Нажмите <strong>«Отправить»</strong>.</li>
+                </ul>
+              </li>
+              <li>После успешной проверки вы получите готовый файл для скачивания.</li>
+              <li>Сохраните финальный файл на компьютере и сделайте 2–3 резервные копии (флешка, внешний диск, облако). Этот <code>.cms</code> — ваш юридически значимый договор.</li>
+            </ol>
+            <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a>
+          `;
+          el('downloadArea').appendChild(instructions);
+
           // also auto-click to start download
           setTimeout(() => {
             try { a.click(); } catch(e){ console.warn('Автозагрузка не удалась', e); }

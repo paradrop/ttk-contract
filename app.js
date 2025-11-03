@@ -106,15 +106,6 @@
     return ok;
   }
 
-  function showJson(){
-    if(!validateAll()){
-      el('jsonOutput').textContent = 'Есть ошибки в форме — исправьте их перед просмотром JSON.';
-      return;
-    }
-    const p = buildPayload();
-    el('jsonOutput').textContent = JSON.stringify(p, null, 2);
-  }
-
   // encode Uint8Array to base64
   function uint8ArrayToBase64(bytes) {
     let binary = '';
@@ -150,10 +141,13 @@
 
   async function sendJson(){
     // validate first
-    el('serverOutput').textContent = '';
+    const generateStatus = el('generateStatus');
+    generateStatus.textContent = '';
+    generateStatus.style.color = '';
     el('downloadArea').innerHTML = '';
     if(!validateAll()){
-      el('serverOutput').textContent = 'Форма содержит ошибки. Исправьте и повторите отправку.';
+      generateStatus.textContent = 'Форма содержит ошибки. Исправьте и повторите отправку.';
+      generateStatus.style.color = '#c23';
       return;
     }
 
@@ -162,7 +156,6 @@
     sendBtn.textContent = 'Отправка...';
 
     const payload = buildPayload();
-    el('jsonOutput').textContent = JSON.stringify(payload, null, 2);
 
     try {
       const resp = await fetch(endpoint, {
@@ -177,9 +170,6 @@
 
       console.log('Response status:', resp.status, resp.statusText);
       console.log('Response body:', parsed);
-
-      el('serverOutput').textContent = 'Status: ' + resp.status + ' ' + resp.statusText + '\n\n' +
-                                      (typeof parsed === 'string' ? parsed : JSON.stringify(parsed, null, 2));
 
       // if parsed is object and has generated_document
       if(parsed && typeof parsed === 'object' && parsed.generated_document){
@@ -200,6 +190,10 @@
           
           const url = URL.createObjectURL(blob);
           const filename = 'generated_document.' + info.ext;
+
+          // show success status
+          generateStatus.textContent = 'Готово! Файл готов к скачиванию.';
+          generateStatus.style.color = '#28a745';
 
           // create link and append
           const downloadBtn = createDownloadButton(blob, filename, 'Повторно скачать заполненный договор', 'btn-download');
@@ -258,15 +252,18 @@
 
         } catch (err) {
           console.error('Ошибка при декодировании файла:', err);
-          el('downloadArea').textContent = 'Не удалось декодировать и скачать файл: ' + (err.message || err);
+          generateStatus.textContent = 'Не удалось декодировать и скачать файл: ' + (err.message || err);
+          generateStatus.style.color = '#c23';
         }
       } else {
-        el('downloadArea').textContent = 'В ответе от сервера нет поля "generated_document".';
+        generateStatus.textContent = 'В ответе от сервера нет поля "generated_document".';
+        generateStatus.style.color = '#c23';
       }
 
     } catch (err) {
       console.error('Ошибка при отправке:', err);
-      el('serverOutput').textContent = 'Ошибка при отправке: ' + (err.message || String(err));
+      generateStatus.textContent = 'Ошибка при отправке: ' + (err.message || String(err));
+      generateStatus.style.color = '#c23';
     } finally {
       sendBtn.disabled = false;
       sendBtn.textContent = 'Сформировать договор';
@@ -418,11 +415,36 @@
     'Сначала укажите адрес проживания'
   );
 
+  // check if form is valid without showing errors
+  function isFormValid(){
+    // check text fields required
+    const requiredText = ['lastname','firstname','middlename','raddress','saddress','manager'];
+    for(let id of requiredText){
+      if(!el(id).value.trim()) return false;
+    }
+
+    // check IIN: 12 digits only
+    const iinVal = el('iin').value.trim();
+    if(!/^\d{12}$/.test(iinVal)) return false;
+
+    // check phone & whatsapp: format +7XXXXXXXXXX
+    const phoneRegex = /^\+7\d{10}$/;
+    const mobileVal = el('mobile').value.trim();
+    if(!phoneRegex.test(mobileVal)) return false;
+
+    const waVal = el('whatsapp').value.trim();
+    if(!phoneRegex.test(waVal)) return false;
+
+    return true;
+  }
+
+  // update send button state
+  function updateSendButtonState(){
+    const sendBtn = el('sendBtn');
+    sendBtn.disabled = !isFormValid();
+  }
+
   // wire events
-  el('showJsonBtn').addEventListener('click', function(e){
-    e.preventDefault();
-    showJson();
-  });
   el('sendBtn').addEventListener('click', function(e){
     e.preventDefault();
     sendJson();
@@ -435,6 +457,7 @@
     if(node) node.addEventListener('input', () => {
       const err = document.querySelector(`.error[data-for="${id}"]`);
       if(err) err.textContent = '';
+      updateSendButtonState();
     });
   });
 
@@ -442,10 +465,15 @@
   el('whatsapp_same_as_mobile').addEventListener('change', function(){
     const err = document.querySelector('.error[data-for="whatsapp"]');
     if(err) err.textContent = '';
+    updateSendButtonState();
   });
   el('saddress_same_as_raddress').addEventListener('change', function(){
     const err = document.querySelector('.error[data-for="saddress"]');
     if(err) err.textContent = '';
+    updateSendButtonState();
   });
+
+  // initialize button state on page load
+  updateSendButtonState();
 
 })();

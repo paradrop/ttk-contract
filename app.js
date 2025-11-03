@@ -195,7 +195,7 @@
           const a = document.createElement('a');
           a.href = url;
           a.download = filename;
-          a.textContent = 'Скачать файл: ' + filename;
+          a.textContent = 'Скачать заполненный договор';
           a.className = 'download-link';
           el('downloadArea').appendChild(a);
 

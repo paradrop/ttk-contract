@@ -205,7 +205,7 @@
           instructions.innerHTML = `
             <h2>Как подписать договор</h2>
             <ol>
-              <li>Нажмите кнопку <strong>«Перейти к подписанию»</strong> — откроется сайт ezsigner.kz в новой вкладке</li>
+              <li>Нажмите кнопку <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a> — откроется сайт ezsigner.kz в новой вкладке</li>
               <li>На компьютере должен быть установлен <strong>NCALayer</strong> и модуль <strong>ezsigner</strong></li>
               <li>На ezsigner.kz:
                 <ul>
@@ -217,14 +217,12 @@
               </li>
               <li>Вернитесь на страницу нашего сайта и нажмите <strong>«Загрузить подписанный договор»</strong>.
                 <ul>
-                  <li>Выберите скачанный <code>.cms</code> файл.</li>
-                  <li>Нажмите <strong>«Отправить»</strong>.</li>
+                  <li>Выберите подписанный <code>.cms</code> файл.</li>
                 </ul>
               </li>
               <li>После успешной проверки вы получите готовый файл для скачивания.</li>
-              <li>Сохраните финальный файл на компьютере и сделайте 2–3 резервные копии (флешка, внешний диск, облако). Этот <code>.cms</code> — ваш юридически значимый договор.</li>
+              <li>Сохраните финальный файл на компьютере и сделайте резервные копии (флешка, внешний диск, облако). Этот <code>.cms</code> — ваш юридически значимый договор.</li>
             </ol>
-            <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a>
           `;
           el('downloadArea').appendChild(instructions);
 

@@ -205,8 +205,8 @@
           instructions.innerHTML = `
             <h2>Как подписать договор</h2>
             <ol>
-              <li>Нажмите кнопку <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a> — откроется сайт ezsigner.kz в новой вкладке</li>
               <li>На компьютере должен быть установлен <strong>NCALayer</strong> и модуль <strong>ezsigner</strong></li>
+              <li>Нажмите кнопку <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a> — откроется сайт ezsigner.kz в новой вкладке</li>
               <li>На ezsigner.kz:
                 <ul>
                   <li>Выберите опцию <strong>«Подписать документ»</strong></li>

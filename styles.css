@@ -67,12 +67,12 @@ input[type="text"]:disabled, input[type="tel"]:disabled{
 }
 hr{border:0;border-top:1px solid var(--border);margin:14px 0}
 .btns{display:flex;gap:10px;margin-top:14px}
-button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;font-size:14px;transition:opacity 0.2s ease}
+button{font-family: Inter, Arial, sans-serif;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;font-size:14px;transition:opacity 0.2s ease}
 button:hover{opacity:0.85}
 button:disabled{opacity:0.6;cursor:not-allowed}
 .btn-primary{background:#28a745;color:#fff}
 .btn-upload{background:#28a745;color:#fff}
-.btn-download{display:inline-block;padding:10px 14px;border-radius:10px;background:#0b74de;color:#fff;border:0;cursor:pointer;font-weight:600;font-size:14px;text-decoration:none;transition:opacity 0.2s ease}
+.btn-download{display:inline-block;padding:10px 14px;border-radius:10px;background:#0b74de;color:#fff;border:0;cursor:pointer;font-weight:600;font-size:14px;text-decoration:none;transition:opacity 0.2s ease;line-height: 1.0;}
 .btn-download:hover{opacity:0.85}
 .output{background:#f8f8f8;padding:12px;border-radius:8px;border:1px solid var(--border);white-space:pre-wrap;max-height:260px;overflow:auto}
 .outputs{margin-top:16px}
@@ -136,16 +136,17 @@ button:disabled{opacity:0.6;cursor:not-allowed}
   font-weight:600;
   font-size:14px;
   transition:opacity 0.2s ease;
+  line-height: 1.0;
 }
 .ezsigner-button:hover{
   opacity:0.85;
 }
 .cms-upload-section{
   margin-top:12px;
-  padding:12px;
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:8px;
+  /*! padding:12px; */
+  /*! background:#fff; */
+  /*! border:1px solid var(--border); */
+  /*! border-radius:8px; */
 }
 .upload-status{
   margin-top:10px;

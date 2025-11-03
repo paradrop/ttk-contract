@@ -293,10 +293,6 @@
   );
 
   // wire events
-  el('showJsonBtn').addEventListener('click', function(e){
-    e.preventDefault();
-    showJson();
-  });
   el('sendBtn').addEventListener('click', function(e){
     e.preventDefault();
     sendJson();

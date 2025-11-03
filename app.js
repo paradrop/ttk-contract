@@ -115,6 +115,16 @@
     el('jsonOutput').textContent = JSON.stringify(p, null, 2);
   }
 
+  // encode Uint8Array to base64
+  function uint8ArrayToBase64(bytes) {
+    let binary = '';
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
   // decode base64 to Uint8Array
   function base64ToUint8Array(base64) {
     // remove any whitespace and newlines that might be present
@@ -192,12 +202,8 @@
           const filename = 'generated_document.' + info.ext;
 
           // create link and append
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          a.textContent = 'Повторно скачать заполненный договор';
-          a.className = 'download-link';
-          el('downloadArea').appendChild(a);
+          const downloadBtn = createDownloadButton(blob, filename, 'Повторно скачать заполненный договор', 'btn-download');
+          el('downloadArea').appendChild(downloadBtn);
 
           // add instructions for signing the document
           const instructions = document.createElement('div');
@@ -205,7 +211,7 @@
           instructions.innerHTML = `
             <h2>Как подписать договор</h2>
             <ol>
-              <li>На компьютере должен быть установлен <strong>NCALayer</strong> и модуль <strong>ezsigner</strong></li>
+              <li>На компьютере должен быть установлен <a href="https://ncl.pki.gov.kz/" target="_blank" rel="noopener noreferrer"><strong>NCALayer</strong></a> и модуль <strong>ezsigner</strong></li>
               <li>Нажмите кнопку <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a> — откроется сайт ezsigner.kz в новой вкладке</li>
               <li>На ezsigner.kz:
                 <ul>
@@ -215,20 +221,39 @@
                   <li>После успешной подписи скачайте файл <code>.cms</code> (это результат подписи).</li>
                 </ul>
               </li>
-              <li>Вернитесь на страницу нашего сайта и нажмите <strong>«Загрузить подписанный договор»</strong>.
-                <ul>
-                  <li>Выберите подписанный <code>.cms</code> файл.</li>
-                </ul>
+              <li>Вернитесь на страницу нашего сайта и нажмите кнопку ниже для загрузки подписанного файла:
+                <div class="cms-upload-section">
+                  <input type="file" id="cmsFileInput" accept=".cms" style="display:none;">
+                  <button type="button" class="btn-upload" id="uploadCmsBtn">Загрузить подписанный договор</button>
+                  <div class="upload-status"></div>
+                  <div class="cms-download-container"></div>
+                </div>
               </li>
-              <li>После успешной проверки вы получите готовый файл для скачивания.</li>
+              <li>После успешной проверки файл автоматически начнёт скачиваться.</li>
               <li>Сохраните финальный файл на компьютере и сделайте резервные копии (флешка, внешний диск, облако). Этот <code>.cms</code> — ваш юридически значимый договор.</li>
             </ol>
           `;
           el('downloadArea').appendChild(instructions);
 
+          // setup CMS upload button and file input
+          const cmsFileInput = instructions.querySelector('#cmsFileInput');
+          const uploadCmsBtn = instructions.querySelector('#uploadCmsBtn');
+          const uploadSection = instructions.querySelector('.cms-upload-section');
+
+          uploadCmsBtn.addEventListener('click', () => {
+            cmsFileInput.click();
+          });
+
+          cmsFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              await handleCmsUpload(file, uploadSection);
+            }
+          });
+
           // also auto-click to start download
           setTimeout(() => {
-            try { a.click(); } catch(e){ console.warn('Автозагрузка не удалась', e); }
+            try { downloadBtn.click(); } catch(e){ console.warn('Автозагрузка не удалась', e); }
           }, 200);
 
         } catch (err) {
@@ -245,6 +270,80 @@
     } finally {
       sendBtn.disabled = false;
       sendBtn.textContent = 'Сформировать договор';
+    }
+  }
+
+  // create a download button that stores blob URL for reuse
+  function createDownloadButton(blob, filename, buttonText, className = 'download-link') {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.textContent = buttonText;
+    a.className = className;
+    return a;
+  }
+
+  // handle CMS file upload, encode, send to server, and download result
+  async function handleCmsUpload(file, uploadSection) {
+    const statusDiv = uploadSection.querySelector('.upload-status');
+    const downloadContainer = uploadSection.querySelector('.cms-download-container');
+    
+    statusDiv.textContent = 'Обработка файла...';
+    downloadContainer.innerHTML = '';
+
+    try {
+      // read file as ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      
+      // encode to base64
+      const base64Cms = uint8ArrayToBase64(bytes);
+      console.log('CMS file encoded, base64 length:', base64Cms.length);
+
+      // send to endpoint
+      statusDiv.textContent = 'Отправка на сервер...';
+      const resp = await fetch(endpoint + '/cms', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ cms: base64Cms })
+      });
+
+      if (!resp.ok) {
+        throw new Error('Сервер вернул ошибку: ' + resp.status + ' ' + resp.statusText);
+      }
+
+      const result = await resp.json();
+      console.log('CMS response received:', result);
+
+      if (!result.signed_cms) {
+        throw new Error('В ответе от сервера нет поля "signed_cms"');
+      }
+
+      // decode the signed CMS
+      const signedBytes = base64ToUint8Array(result.signed_cms);
+      console.log('Signed CMS decoded, bytes length:', signedBytes.length);
+      
+      const info = guessFileType(signedBytes);
+      const blob = new Blob([signedBytes], { type: info.mime });
+      const filename = 'signed_document.' + info.ext;
+
+      // create download button
+      const downloadBtn = createDownloadButton(blob, filename, 'Повторно скачать финальный документ', 'btn-download');
+      downloadContainer.appendChild(downloadBtn);
+
+      statusDiv.textContent = 'Готово! Файл готов к скачиванию.';
+      statusDiv.style.color = '#28a745';
+
+      // auto-download
+      setTimeout(() => {
+        try { downloadBtn.click(); } catch(e){ console.warn('Автозагрузка не удалась', e); }
+      }, 200);
+
+    } catch (err) {
+      console.error('Ошибка при обработке CMS:', err);
+      statusDiv.textContent = 'Ошибка: ' + (err.message || String(err));
+      statusDiv.style.color = '#c23';
     }
   }
 

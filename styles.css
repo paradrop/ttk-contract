@@ -67,15 +67,19 @@ input[type="text"]:disabled, input[type="tel"]:disabled{
 }
 hr{border:0;border-top:1px solid var(--border);margin:14px 0}
 .btns{display:flex;gap:10px;margin-top:14px}
-button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;font-size:14px;transition:opacity 0.2s ease}
+button:hover{opacity:0.85}
+button:disabled{opacity:0.6;cursor:not-allowed}
 .btn-primary{background:#111;color:#fff}
 .btn-secondary{background:#efefef;color:#111}
+.btn-upload{background:#28a745;color:#fff}
+.btn-download{display:inline-block;padding:10px 14px;border-radius:10px;background:#0b74de;color:#fff;border:0;cursor:pointer;font-weight:600;font-size:14px;text-decoration:none;transition:opacity 0.2s ease}
+.btn-download:hover{opacity:0.85}
 .output{background:#f8f8f8;padding:12px;border-radius:8px;border:1px solid var(--border);white-space:pre-wrap;max-height:260px;overflow:auto}
 .outputs{margin-top:16px}
 .error{color:var(--err);font-size:13px;margin-top:6px;min-height:18px}
 .req{color:var(--err);margin-left:6px}
 #downloadArea{margin-top:12px}
-a.download-link{display:inline-block;padding:8px 12px;background:#0b74de;color:#fff;border-radius:8px;text-decoration:none;margin-top:8px}
 .signing-instructions{
   margin-top:20px;
   padding:16px 20px;
@@ -119,16 +123,33 @@ a.download-link{display:inline-block;padding:8px 12px;background:#0b74de;color:#
 .ezsigner-button{
   display:inline-block;
   margin-top:16px;
-  padding:10px 16px;
+  padding:10px 14px;
   background:#28a745;
   color:#fff;
-  border-radius:8px;
+  border-radius:10px;
   text-decoration:none;
   font-weight:600;
-  transition:background 0.2s ease;
+  font-size:14px;
+  transition:opacity 0.2s ease;
 }
 .ezsigner-button:hover{
-  background:#218838;
+  opacity:0.85;
+}
+.cms-upload-section{
+  margin-top:12px;
+  padding:12px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+.upload-status{
+  margin-top:10px;
+  font-size:14px;
+  font-weight:500;
+  min-height:20px;
+}
+.cms-download-container{
+  margin-top:12px;
 }
 @media (max-width:640px){
   .grid, .service-row{grid-template-columns:1fr 90px 90px}

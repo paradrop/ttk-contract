@@ -267,6 +267,7 @@
           instructions.innerHTML = `
             <h2>Как подписать договор</h2>
             <ol>
+			  <li>Внимательно проверьте заполненный договор </li>
               <li>На компьютере должен быть установлен <a href="https://ncl.pki.gov.kz/" target="_blank" rel="noopener noreferrer"><strong>NCALayer</strong></a> и модуль <strong>ezsigner</strong></li>
               <li>Нажмите кнопку <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a> — откроется сайт ezsigner.kz в новой вкладке</li>
               <li>На ezsigner.kz:

@@ -1,6 +1,7 @@
 // app.js
 (function(){
   const endpoint = 'https://mpc3ec4b5d7d11f2d3db.free.beeceptor.com';
+  const cmsEndpoint = 'https://mpc3ec4b5d7d11f2d3db.free.beeceptor.com/cms';
 
   function el(id){ return document.getElementById(id); }
   function qsel(selector){ return document.querySelector(selector); }
@@ -267,7 +268,7 @@
           instructions.innerHTML = `
             <h2>Как подписать договор</h2>
             <ol>
-			  <li>Внимательно проверьте заполненный договор </li>
+              <li>Внимательно проверьте заполненный договор </li>
               <li>На компьютере должен быть установлен <a href="https://ncl.pki.gov.kz/" target="_blank" rel="noopener noreferrer"><strong>NCALayer</strong></a> и модуль <strong>ezsigner</strong></li>
               <li>Нажмите кнопку <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a> — откроется сайт ezsigner.kz в новой вкладке</li>
               <li>На ezsigner.kz:
@@ -363,7 +364,7 @@
 
       // send to endpoint
       statusDiv.textContent = 'Отправка на сервер...';
-      const resp = await fetch(endpoint + '/cms', {
+      const resp = await fetch(cmsEndpoint, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ cms: base64Cms })
@@ -477,6 +478,34 @@
     'saddress',
     'Сначала укажите адрес проживания'
   );
+
+  // setup single choice for each service (new or existing, but not both)
+  function setupSingleChoice(newId, existingId){
+    const newCheckbox = el(newId);
+    const existingCheckbox = el(existingId);
+    
+    if(!newCheckbox || !existingCheckbox) return;
+    
+    newCheckbox.addEventListener('change', function(){
+      if(this.checked && existingCheckbox.checked){
+        existingCheckbox.checked = false;
+      }
+    });
+    
+    existingCheckbox.addEventListener('change', function(){
+      if(this.checked && newCheckbox.checked){
+        newCheckbox.checked = false;
+      }
+    });
+  }
+
+  // setup for all services
+  setupSingleChoice('catv_n', 'catv_e');
+  setupSingleChoice('int_n', 'int_e');
+  setupSingleChoice('cctv_n', 'cctv_e');
+  setupSingleChoice('icom_n', 'icom_e');
+  setupSingleChoice('iptv_n', 'iptv_e');
+  setupSingleChoice('rout_n', 'rout_e');
 
   // check if form is valid without showing errors
   function isFormValid(){

@@ -1,0 +1,65 @@
+[1mdiff --git a/app.js b/app.js[m
+[1mindex 37410be..fdc0a4b 100644[m
+[1m--- a/app.js[m
+[1m+++ b/app.js[m
+[36m@@ -1,6 +1,7 @@[m
+ // app.js[m
+ (function(){[m
+   const endpoint = 'https://mpc3ec4b5d7d11f2d3db.free.beeceptor.com';[m
+[32m+[m[32m  const cmsEndpoint = 'https://mpc3ec4b5d7d11f2d3db.free.beeceptor.com/cms';[m
+ [m
+   function el(id){ return document.getElementById(id); }[m
+   function qsel(selector){ return document.querySelector(selector); }[m
+[36m@@ -267,7 +268,7 @@[m
+           instructions.innerHTML = `[m
+             <h2>Как подписать договор</h2>[m
+             <ol>[m
+[31m-			  <li>Внимательно проверьте заполненный договор </li>[m
+[32m+[m[32m              <li>Внимательно проверьте заполненный договор </li>[m
+               <li>На компьютере должен быть установлен <a href="https://ncl.pki.gov.kz/" target="_blank" rel="noopener noreferrer"><strong>NCALayer</strong></a> и модуль <strong>ezsigner</strong></li>[m
+               <li>Нажмите кнопку <a href="https://ezsigner.kz" target="_blank" rel="noopener noreferrer" class="ezsigner-button">Перейти к подписанию</a> — откроется сайт ezsigner.kz в новой вкладке</li>[m
+               <li>На ezsigner.kz:[m
+[36m@@ -363,7 +364,7 @@[m
+ [m
+       // send to endpoint[m
+       statusDiv.textContent = 'Отправка на сервер...';[m
+[31m-      const resp = await fetch(endpoint + '/cms', {[m
+[32m+[m[32m      const resp = await fetch(cmsEndpoint, {[m
+         method: 'POST',[m
+         headers: {'Content-Type': 'application/json'},[m
+         body: JSON.stringify({ cms: base64Cms })[m
+[36m@@ -478,6 +479,34 @@[m
+     'Сначала укажите адрес проживания'[m
+   );[m
+ [m
+[32m+[m[32m  // setup single choice for each service (new or existing, but not both)[m
+[32m+[m[32m  function setupSingleChoice(newId, existingId){[m
+[32m+[m[32m    const newCheckbox = el(newId);[m
+[32m+[m[32m    const existingCheckbox = el(existingId);[m
+[32m+[m[41m    [m
+[32m+[m[32m    if(!newCheckbox || !existingCheckbox) return;[m
+[32m+[m[41m    [m
+[32m+[m[32m    newCheckbox.addEventListener('change', function(){[m
+[32m+[m[32m      if(this.checked && existingCheckbox.checked){[m
+[32m+[m[32m        existingCheckbox.checked = false;[m
+[32m+[m[32m      }[m
+[32m+[m[32m    });[m
+[32m+[m[41m    [m
+[32m+[m[32m    existingCheckbox.addEventListener('change', function(){[m
+[32m+[m[32m      if(this.checked && newCheckbox.checked){[m
+[32m+[m[32m        newCheckbox.checked = false;[m
+[32m+[m[32m      }[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  // setup for all services[m
+[32m+[m[32m  setupSingleChoice('catv_n', 'catv_e');[m
+[32m+[m[32m  setupSingleChoice('int_n', 'int_e');[m
+[32m+[m[32m  setupSingleChoice('cctv_n', 'cctv_e');[m
+[32m+[m[32m  setupSingleChoice('icom_n', 'icom_e');[m
+[32m+[m[32m  setupSingleChoice('iptv_n', 'iptv_e');[m
+[32m+[m[32m  setupSingleChoice('rout_n', 'rout_e');[m
+[32m+[m
+   // check if form is valid without showing errors[m
+   function isFormValid(){[m
+     // check text fields required[m
